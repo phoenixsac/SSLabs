@@ -1,0 +1,1 @@
+This is inout file. The content from this file has to be copied into the target file.

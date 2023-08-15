@@ -1,0 +1,4 @@
+this is the sample file for hard link.
+after making changes through hard link.
+after deleting the original file, the content can still be accesed through hardlink
+In case of softlink, it becomes a invalid access
