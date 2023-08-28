@@ -89,9 +89,9 @@ int main(int argc, char *argv[]){
 	}
 
 	if(get_write_lk(fd,recordno)==0){
-		char *recordData="6,bfDD7CDEF5D865B,Erin,Day,Male,tconner@example.org,Waste management officer\n";
+		char recordData[]="6,bfDD7CDEF5D865B,Erin,Day,Male,tconner@example.org,Waste management officer\n";
 		lseek(fd,recordno*RECORD_SIZE,SEEK_SET);
-		write(fd,recordData,RECORD_SIZE);
+		write(fd,recordData,sizeof(recordData)-1);
 		sleep(SLEEP_TIMEOUT);
 		printf("\nData writing done.");
 		rel_write_lk(fd,recordno);
