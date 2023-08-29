@@ -1,5 +1,7 @@
 
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/sysmacros.h>
 #include <unistd.h>
 #include <stdio.h>
 int main(int argc, char *argv[]){
@@ -11,12 +13,12 @@ int main(int argc, char *argv[]){
 	char *filepath=argv[1];
 	struct stat fInfo;
 
-	if(stat(filepath,&fInfo)==-1){
+	if(lstat(filepath,&fInfo)==-1){
 		perror("Error.");
 		return 1;
 	}
 
-    printf("\nfile type : %d",fInfo.st_mode);
+    //printf("\nfile type : %d",fInfo.st_mode);
 
 	if (S_ISREG(fInfo.st_mode)) {
         printf("%s is a regular file.\n", filepath);
