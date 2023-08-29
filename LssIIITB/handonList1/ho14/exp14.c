@@ -1,3 +1,4 @@
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -14,6 +15,8 @@ int main(int argc, char *argv[]){
 		perror("Error.");
 		return 1;
 	}
+
+    printf("\nfile type : %d",fInfo.st_mode);
 
 	if (S_ISREG(fInfo.st_mode)) {
         printf("%s is a regular file.\n", filepath);

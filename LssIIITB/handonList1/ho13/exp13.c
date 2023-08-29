@@ -13,7 +13,7 @@ int main(){
 	tval.tv_sec=time;
 	tval.tv_usec=0;
 
-	int ret=select(STDIN_FILENO+1, &rdfds, NULL, NULL, &tval);
+	int ret=select(STDIN_FILENO, &rdfds, NULL, NULL, &tval);
 
 	if(ret==-1){
 		perror("select error");

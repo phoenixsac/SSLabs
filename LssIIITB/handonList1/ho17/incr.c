@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
     int fd = open(filename,O_RDWR);
 
     if(fd==-1){
-        perror("File culd not be opened.");
+        perror("File could not be opened.");
     }
    
 
@@ -64,9 +64,9 @@ int main(int argc, char *argv[]){
     printf("Your ticket no. is : %d",tkt_num);
 
     snprintf(buff,sizeof(buff),"%d",tkt_num);
-
+    lseek(fd,0,SEEK_SET);
     ssize_t bytesWrote = write(fd, buff, sizeof(buff));
-    printf("Press to unlock.");
+    printf("\nPress to unlock.");
     getchar();
     rel_write_lk(fd);
     if (bytesWrote == -1) {
