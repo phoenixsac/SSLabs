@@ -3,36 +3,28 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#define SLEEP_TIMEOUT 5
 
-int get_write_lk(int fd){
-	struct flock lock;
-	lock.l_type=F_WRLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = 0;
+
+
+//0 for read, 1 for write and 2 for unlock
+int get_locking(int fd, int l_type){
+    struct flock lock;
+    if(l_type==0)
+        lock.l_type=F_RDLCK;
+    else if(l_type==2)
+        lock.l_type=F_UNLCK;
+    else if(l_type==1)
+        lock.l_type=F_WRLCK;
+    lock.l_whence=SEEK_SET;
+    lock.l_start = 0;
     lock.l_len = 0;
-    //if lock is unreleased and file /process closes abruptly, OS auto releases the lock
     lock.l_pid=getpid();
 
-    //error not in case of already existing file lock, due to some other error maybe
-    if(fcntl(fd,F_SETLKW,&lock)==-1){
-    	perror("Error getting write lock");
-    	return -1;
+    if(fcntl(fd,F_SETLKW, &lock)==-1){
+        perror("Error locking or releasing lock...");
+        return -1;
     }
     return 0;
-}
-
-int rel_write_lk(int fd){
-	struct flock lock;
-	lock.l_type=F_UNLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = 0;
-    lock.l_len = 0;
-
-    if(fcntl(fd,F_SETLK, &lock)==-1){
-    	perror("Error releasing write lock");
-    }
-
 }
 
 
@@ -53,7 +45,7 @@ int main(int argc, char *argv[]){
 
     char buff[256];
 
-    if(get_write_lk(fd)==0){
+    if(get_locking(fd,1)==0){
         ssize_t bytesRead=read(fd,buff, sizeof(buff));
         buff[bytesRead]='\0';
     }
@@ -68,7 +60,7 @@ int main(int argc, char *argv[]){
     ssize_t bytesWrote = write(fd, buff, sizeof(buff));
     printf("\nPress to unlock.");
     getchar();
-    rel_write_lk(fd);
+    get_locking(fd,2);
     if (bytesWrote == -1) {
         perror("Error writing to file");
         close(fd);

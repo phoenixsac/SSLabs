@@ -17,6 +17,7 @@ int get_locking(int fd, int l_type){
 	lock.l_whence=SEEK_SET;
 	lock.l_start = 0;
     lock.l_len = 0;
+    lock.l_pid=getpid();
 
     if(fcntl(fd,F_SETLKW, &lock)==-1){
     	perror("Error locking or releasing lock...");

@@ -25,9 +25,9 @@ int main(){
 	}
 	else{
 		printf("Data is available.");
-		/*if(FD_ISSET(STDIN_FILENO, &rdfds)){
+		if(FD_ISSET(STDIN_FILENO, &rdfds)){
 			printf("Stdin is ready with data for reading.");
-		}	*/
+		}	
 	}
 
 

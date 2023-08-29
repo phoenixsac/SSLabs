@@ -6,38 +6,29 @@
 #define SLEEP_TIMEOUT 2
 #define RECORD_SIZE 5
 
-int get_write_lk(int fd,int recordno){
-	struct flock lock;
-	lock.l_type=F_WRLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = (recordno-1)*RECORD_SIZE;
-    lock.l_len = RECORD_SIZE;
 
-    if(fcntl(fd,F_SETLKW,&lock)==-1){
-    	perror("\nError getting write lock");
-    	return -1;
-    }
-    else{
-    	printf("\nWrite lock successfully acquired on record no. %d.",recordno);
+
+//0 for read, 1 for write and 2 for unlock
+int get_locking(int fd, int recordno, int l_type){
+    struct flock lock;
+    if(l_type==0)
+        lock.l_type=F_RDLCK;
+    else if(l_type==2)
+        lock.l_type=F_UNLCK;
+    else if(l_type==1)
+        lock.l_type=F_WRLCK;
+    lock.l_whence=SEEK_SET;
+    lock.l_start = RECORD_SIZE*(recordno-1);;
+    lock.l_len = RECORD_SIZE;
+    lock.l_pid=getpid();
+
+    if(fcntl(fd,F_SETLKW, &lock)==-1){
+        perror("Error locking or releasing lock...");
+        return -1;
     }
     return 0;
 }
 
-int rel_write_lk(int fd,int recordno){
-	struct flock lock;
-	lock.l_type=F_UNLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = (recordno-1)*RECORD_SIZE;
-    lock.l_len = RECORD_SIZE;
-
-    if(fcntl(fd,F_SETLK, &lock)==-1){
-    	perror("\nError releasing write lock");
-    }
-    else{
-    	printf("\nWrite lock on record %d released.",recordno);
-    }
-
-}
 
 
 
@@ -57,15 +48,13 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	if(get_write_lk(fd,recordno)==0){
-		//char recordData[]="\n";
+	if(get_locking(fd,recordno,1)==0){
+		
 		lseek(fd,(recordno-1)*RECORD_SIZE,SEEK_SET);
-		//write(fd,recordData,sizeof(recordData)-1);
-
 		printf("\nData writing done.");
 		printf("\nPress to unlock");
 		getchar();
-		rel_write_lk(fd,recordno);
+		get_locking(fd,recordno,2);
 		
 	}
 	else{

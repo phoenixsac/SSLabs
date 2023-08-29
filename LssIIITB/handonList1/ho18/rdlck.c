@@ -7,38 +7,29 @@
 #define SLEEP_TIMEOUT 2
 #define RECORD_SIZE 5
 
-int get_read_lk(int fd,int recordno){
-	struct flock lock;
-	lock.l_type=F_RDLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = RECORD_SIZE*(recordno-1);
-    lock.l_len = RECORD_SIZE;
 
-    if(fcntl(fd,F_SETLKW,&lock)==-1){
-    	perror("\nError getting read lock");
-    	return -1;
-    }
-     else{
-    	printf("\nRead lock acquired on record %d.",recordno);
+int get_locking(int fd, int recordno, int l_type){
+    struct flock lock;
+    if(l_type==0)
+        lock.l_type=F_RDLCK;
+    else if(l_type==2)
+        lock.l_type=F_UNLCK;
+    else if(l_type==1)
+        lock.l_type=F_WRLCK;
+    lock.l_whence=SEEK_SET;
+    lock.l_start = RECORD_SIZE*(recordno-1);;
+    lock.l_len = RECORD_SIZE;
+    lock.l_pid=getpid();
+
+    if(fcntl(fd,F_SETLKW, &lock)==-1){
+        perror("Error locking or releasing lock...");
+        return -1;
     }
     return 0;
 }
 
 
-int rel_read_lk(int fd,int recordno){
-	struct flock lock;
-	lock.l_type=F_UNLCK;
-	lock.l_whence=SEEK_SET;
-	lock.l_start = RECORD_SIZE*(recordno-1);
-    lock.l_len = RECORD_SIZE;
 
-    if(fcntl(fd,F_SETLK, &lock)==-1){
-    	perror("\nError releasing read lock");
-    }
-     else{
-    	printf("\nRead lock on record %d released.",recordno);
-    }
-}
 
 int main(int argc, char *argv[]){
 
@@ -54,7 +45,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	if(get_read_lk(fd,recordno)==0){
+	if(get_locking(fd,recordno,0)==0){
 
 		char buff[RECORD_SIZE];
 		ssize_t bytesRead;
@@ -67,7 +58,7 @@ int main(int argc, char *argv[]){
 
 		printf("\nPress enter to unlock...");
 		getchar();
-		rel_read_lk(fd,recordno);
+		get_locking(fd,recordno,2);
 	}
 
 
