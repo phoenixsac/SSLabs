@@ -1,69 +1,40 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <time.h>
+/*
+============================================================================
+Name : 30.c
+Author : Sachin Nair
+Description : Write a program to run a script at a specific time using a Daemon process.
+Date: 09th Sept, 2023.
+============================================================================
+*/
 
-int main() {
-    int pid;
-    pid = fork();
+#include<stdio.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<stdlib.h>
+#include<time.h>
 
-    
-    if (pid < 0) {
-        perror("Fork failed");
-        exit(EXIT_FAILURE);
-    }
+int main(void) {
+	int hour, min;
+	printf("Enter time to run a process (HH:MM) ");
+	scanf("%d:%d", &hour, &min);
 
-    
-    if (pid > 0) {
-        exit(EXIT_SUCCESS);
-    }
+	if(fork()) exit(0);
+	setsid();
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
 
-    umask(0);
-    
-    if (setsid() < 0) {
-        perror("setsid failed");
-        exit(EXIT_FAILURE);
-    }
+	while(1) {
+		struct tm *tm;
+		time_t current_time;
+		time(&current_time);
+		tm = localtime(&current_time);
+		if(tm->tm_hour == hour && tm->tm_min == min) {
+			system("test.sh");
+			break;
+		}
+		sleep(5);		
+	}
 
-    
-    chdir("/");
-
-    // Close standard file descriptors
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
-
-    int hours,mins;
-    printf("Enter time in HH:MM format : ");
-    scanf("%d %d",&hours,&mins);
-
-    // Now, the child process is a daemon running in the background
-    while (1) {
-        time_t now;
-        struct tm *tm_info;
-
-        // Get the current time
-        time(&now);
-        tm_info = localtime(&now);
-
-        // Check if it's the desired time (e.g., 08:00 AM)
-        if (tm_info->tm_hour == hours && tm_info->tm_min == mins) {
-            // Replace "/path/to/your/script.sh" with the path to your script
-            //execl("/bin/bash", "bash", "/path/to/your/script.sh", (char *)0);
-            system();
-            // If execl fails, log the error and exit
-            perror("execl failed");
-            exit(EXIT_FAILURE);
-        }
-
-        // Sleep for a while (e.g., 1 minute) before checking the time again
-        sleep(60);
-    }
-
-    // The daemon process should never reach this point
-    return 0;
+	return 0;
 }

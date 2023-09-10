@@ -1,3 +1,11 @@
+/*
+============================================================================
+Name : 24.c
+Author : Sachin Nair
+Description :   Write a program to create an orphan process.
+============================================================================
+*/
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>

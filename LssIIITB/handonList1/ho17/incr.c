@@ -1,3 +1,16 @@
+/*
+============================================================================
+Name : 17.c
+Author : Sachin Nair
+Description :  7. Write a program to simulate online ticket reservation. Implement write lock 
+Write a program to open a file, store a ticket number and exit. Write a separate program, to 
+open the file, implement write lock, read the ticket number, increment the number and print 
+the new ticket number then close the file.
+Date: 10th Sept, 2023.
+============================================================================
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -37,27 +50,26 @@ int main(int argc, char *argv[]){
     }
     char *filename=argv[1];
     int fd = open(filename,O_RDWR);
+    int tkt_num;
 
     if(fd==-1){
         perror("File could not be opened.");
     }
-   
-
-    char buff[256];
+ 
+    size_t bytesRead;
 
     if(get_locking(fd,1)==0){
-        ssize_t bytesRead=read(fd,buff, sizeof(buff));
-        buff[bytesRead]='\0';
+        bytesRead=read(fd,&tkt_num, sizeof(int));
     }
 
-    int tkt_num=atoi(buff);
 
     tkt_num++;
-    printf("Your ticket no. is : %d",tkt_num);
+    if(bytesRead==sizeof(int)){
+    	printf("Your ticket no. is : %d",tkt_num);
+    }
 
-    snprintf(buff,sizeof(buff),"%d",tkt_num);
     lseek(fd,0,SEEK_SET);
-    ssize_t bytesWrote = write(fd, buff, sizeof(buff));
+    ssize_t bytesWrote = write(fd, &tkt_num, sizeof(int));
     printf("\nPress to unlock.");
     getchar();
     get_locking(fd,2);

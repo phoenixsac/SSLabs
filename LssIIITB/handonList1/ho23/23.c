@@ -1,3 +1,11 @@
+/*
+============================================================================
+Name : 23.c
+Author : Sachin Nair
+Description :  Write a program to create a Zombie state of the running program.
+============================================================================
+*/
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
