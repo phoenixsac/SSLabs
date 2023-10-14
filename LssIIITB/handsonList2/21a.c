@@ -11,6 +11,7 @@ Date: 14th Oct, 2023.
 #include<fcntl.h>
 #include<unistd.h>
 
+//sequence matters else will be blocked and deadlock can happen
 int main(void) {
     int buff[80];
     int fd1 = open("fifo", O_WRONLY);

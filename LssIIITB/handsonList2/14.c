@@ -1,7 +1,7 @@
 /*
 ============================================================================
 Name : 14.c
-Author : ASachin Nair
+Author : Sachin Nair
 Description : Write a simple program to create a pipe, write to the pipe, read from pipe and display on
 the monitor.
 Date: 14th Oct, 2023.

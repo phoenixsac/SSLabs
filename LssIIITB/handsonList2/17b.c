@@ -10,6 +10,7 @@ Date: 14th Oct, 2023.
 
 #include<unistd.h>
 
+//dup2 closes given fd automatically
 int main(void) {
     int fd[2];
     pipe(fd);

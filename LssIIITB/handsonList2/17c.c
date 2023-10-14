@@ -11,6 +11,7 @@ Date: 14th Oct, 2023.
 #include<unistd.h>
 #include<fcntl.h>
 
+//fcntl checks and assigns fd incrementally if not available
 int main(void) {
     int fd[2];
     pipe(fd);
