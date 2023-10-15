@@ -23,7 +23,7 @@ int main(void) {
 
     printf("Enter msg type: ");
     scanf("%ld", &mq.mtype);
-
+    
     msgrcv(msgid, &mq, sizeof(mq.mtext), mq.mtype, IPC_NOWAIT);
     printf("Message : %s\n", mq.mtext);
 

@@ -8,6 +8,7 @@ Date: 14th Oct, 2023.
 ============================================================================
 */
 
+//fd0 read end,fd1 write end
 #include<unistd.h>
 
 int main(void) {
